@@ -28,14 +28,14 @@ El proyecto se encuentra en una etapa inicial. Las funcionalidades se irán impl
 
 ### Funcionalidades previstas
 
-* [ ] Estructura inicial de la aplicación
-* [ ] Base de datos SQLite
+* [x] Estructura inicial de la aplicación
+* [x] Base de datos SQLite
 * [ ] Gestión de juegos
-* [ ] Configuración de ubicaciones de partidas
-* [ ] Detección automática de cambios
-* [ ] Cálculo de SHA-256
-* [ ] Versionado de partidas
-* [ ] Copias de seguridad locales
+* [x] Configuración de ubicaciones de partidas
+* [x] Detección automática de cambios
+* [x] Cálculo de SHA-256
+* [x] Versionado de partidas
+* [x] Copias de seguridad locales
 * [ ] Integración con Google Drive
 * [ ] Subida automática de partidas
 * [ ] Restauración de partidas
