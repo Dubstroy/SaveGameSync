@@ -1,0 +1,54 @@
+# Build
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+# VS Code
+.vscode/
+
+# Test results
+TestResults/
+*.trx
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Local application data
+*.db
+*.db-shm
+*.db-wal
+
+# Local configuration / secrets
+appsettings.Local.json
+secrets/
+credentials/
+tokens/
+
+# SaveGameSync local data
+data/
+backups/
+saves/
+
+# Logs
+logs/
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
