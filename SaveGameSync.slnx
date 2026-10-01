@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="src/SaveGameSync.App/SaveGameSync.App.csproj" Id="9bcc00c5-a0e8-4f1e-a2e8-0cce1462a1a0" />
   <Project Path="src/SaveGameSync.Core/SaveGameSync.Core.csproj" Id="c50b58bf-f345-4064-9c60-e317e99012e2" />
+  <Project Path="src/SaveGameSync.Infrastructure/SaveGameSync.Infrastructure.csproj" Id="37fca496-fc42-4ae8-8977-0d7219b05f28" />
   <Project Path="tests/SaveGameSync.Core.Tests/SaveGameSync.Core.Tests.csproj" Id="b1b94b1f-3f16-408f-b56a-76fef528b48e" />
+  <Project Path="tests/SaveGameSync.Infrastructure.Tests/SaveGameSync.Infrastructure.Tests.csproj" Id="debbbc5f-741a-4344-9499-c0ebbbc482e4" />
 </Solution>

@@ -1,4 +1,5 @@
 ﻿using SaveGameSync.Core.Models;
+using SaveGameSync.Core.Persistence;
 
 namespace SaveGameSync.Core.Services;
 
@@ -8,17 +9,20 @@ public sealed class SaveSyncService
     private readonly SaveChangeDetector _changeDetector;
     private readonly SaveVersionManager _versionManager;
     private readonly SaveBackupService _backupService;
+    private readonly ISaveRepository? _repository;
 
     public SaveSyncService(
         SaveFileDetector fileDetector,
         SaveChangeDetector changeDetector,
         SaveVersionManager versionManager,
-        SaveBackupService backupService)
+        SaveBackupService backupService,
+        ISaveRepository? repository = null)
     {
         _fileDetector = fileDetector;
         _changeDetector = changeDetector;
         _versionManager = versionManager;
         _backupService = backupService;
+        _repository = repository;
     }
 
     public async Task<SaveSyncResult> SynchronizeAsync(
@@ -27,8 +31,20 @@ public sealed class SaveSyncService
         string backupPath,
         CancellationToken cancellationToken = default)
     {
+        var detectedAt = DateTimeOffset.UtcNow;
+
         if (!_fileDetector.Exists(trackedSave.FilePath))
         {
+            trackedSave.Exists = false;
+            trackedSave.LastDetectedAt = detectedAt;
+
+            if (_repository is not null)
+            {
+                await _repository.UpdateTrackedSaveAsync(
+                    trackedSave,
+                    cancellationToken);
+            }
+
             return new SaveSyncResult
             {
                 Status = SaveSyncStatus.FileMissing
@@ -39,10 +55,20 @@ public sealed class SaveSyncService
             trackedSave.FilePath,
             cancellationToken);
 
+        trackedSave.Exists = true;
+        trackedSave.LastDetectedAt = detectedAt;
+
         if (!_changeDetector.HasChanged(
                 trackedSave.CurrentHash,
                 currentHash))
         {
+            if (_repository is not null)
+            {
+                await _repository.UpdateTrackedSaveAsync(
+                    trackedSave,
+                    cancellationToken);
+            }
+
             return new SaveSyncResult
             {
                 Status = SaveSyncStatus.NoChanges,
@@ -60,6 +86,19 @@ public sealed class SaveSyncService
             trackedSave.FilePath,
             backupPath,
             cancellationToken);
+
+        trackedSave.CurrentHash = currentHash;
+
+        if (_repository is not null)
+        {
+            await _repository.UpdateTrackedSaveAsync(
+                trackedSave,
+                cancellationToken);
+
+            await _repository.AddVersionAsync(
+                version,
+                cancellationToken);
+        }
 
         return new SaveSyncResult
         {
