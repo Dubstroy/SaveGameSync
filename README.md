@@ -31,7 +31,7 @@ El proyecto se encuentra en una etapa inicial. Las funcionalidades se irán impl
 * [x] ~~Estructura inicial de la aplicación~~
 * [x] ~~Base de datos SQLite~~
 * [ ] Gestión de juegos
-* [x] ~~Configuración de ubicaciones de partidas~~
+* [ ] Configuración de ubicaciones de partidas
 * [x] ~~Detección automática de cambios~~
 * [x] ~~Cálculo de SHA-256~~
 * [x] ~~Versionado de partidas~~
