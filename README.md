@@ -28,7 +28,7 @@ El proyecto se encuentra en una etapa inicial. Las funcionalidades se irán impl
 
 ### Funcionalidades previstas
 
-* [x] Estructura inicial de la aplicación
+* [x] <u>Estructura inicial de la aplicación</u>
 * [x] Base de datos SQLite
 * [ ] Gestión de juegos
 * [x] Configuración de ubicaciones de partidas
