@@ -9,14 +9,14 @@ public sealed class SaveSyncService
     private readonly SaveChangeDetector _changeDetector;
     private readonly SaveVersionManager _versionManager;
     private readonly SaveBackupService _backupService;
-    private readonly ISaveRepository? _repository;
+    private readonly ISaveRepository _repository;
 
     public SaveSyncService(
         SaveFileDetector fileDetector,
         SaveChangeDetector changeDetector,
         SaveVersionManager versionManager,
         SaveBackupService backupService,
-        ISaveRepository? repository = null)
+        ISaveRepository repository)
     {
         _fileDetector = fileDetector;
         _changeDetector = changeDetector;
@@ -26,11 +26,24 @@ public sealed class SaveSyncService
     }
 
     public async Task<SaveSyncResult> SynchronizeAsync(
-        TrackedSave trackedSave,
-        IEnumerable<SaveVersion> existingVersions,
+        Guid trackedSaveId,
         string backupPath,
         CancellationToken cancellationToken = default)
     {
+        var trackedSave = await _repository.GetTrackedSaveAsync(
+            trackedSaveId,
+            cancellationToken);
+
+        if (trackedSave is null)
+        {
+            throw new InvalidOperationException(
+                $"Tracked save '{trackedSaveId}' was not found.");
+        }
+
+        var existingVersions = await _repository.GetVersionsAsync(
+            trackedSaveId,
+            cancellationToken);
+
         var detectedAt = DateTimeOffset.UtcNow;
 
         if (!_fileDetector.Exists(trackedSave.FilePath))
@@ -38,12 +51,9 @@ public sealed class SaveSyncService
             trackedSave.Exists = false;
             trackedSave.LastDetectedAt = detectedAt;
 
-            if (_repository is not null)
-            {
-                await _repository.UpdateTrackedSaveAsync(
-                    trackedSave,
-                    cancellationToken);
-            }
+            await _repository.UpdateTrackedSaveAsync(
+                trackedSave,
+                cancellationToken);
 
             return new SaveSyncResult
             {
@@ -62,12 +72,9 @@ public sealed class SaveSyncService
                 trackedSave.CurrentHash,
                 currentHash))
         {
-            if (_repository is not null)
-            {
-                await _repository.UpdateTrackedSaveAsync(
-                    trackedSave,
-                    cancellationToken);
-            }
+            await _repository.UpdateTrackedSaveAsync(
+                trackedSave,
+                cancellationToken);
 
             return new SaveSyncResult
             {
@@ -89,16 +96,13 @@ public sealed class SaveSyncService
 
         trackedSave.CurrentHash = currentHash;
 
-        if (_repository is not null)
-        {
-            await _repository.UpdateTrackedSaveAsync(
-                trackedSave,
-                cancellationToken);
+        await _repository.UpdateTrackedSaveAsync(
+            trackedSave,
+            cancellationToken);
 
-            await _repository.AddVersionAsync(
-                version,
-                cancellationToken);
-        }
+        await _repository.AddVersionAsync(
+            version,
+            cancellationToken);
 
         return new SaveSyncResult
         {

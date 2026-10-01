@@ -1,5 +1,4 @@
 ﻿using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 using SaveGameSync.Core.Models;
 using SaveGameSync.Core.Services;
 using SaveGameSync.Infrastructure.Persistence;
@@ -8,7 +7,6 @@ namespace SaveGameSync.Infrastructure.Tests.Persistence;
 
 public sealed class SaveSyncPersistenceTests
 {
-
     [Fact]
     public async Task ShouldMarkSaveAsMissingWithoutDeletingIt()
     {
@@ -60,8 +58,7 @@ public sealed class SaveSyncPersistenceTests
 
             var result =
                 await service.SynchronizeAsync(
-                    trackedSave,
-                    Array.Empty<SaveVersion>(),
+                    trackedSave.Id,
                     Path.Combine(
                         temporaryDirectory,
                         "Backups",
@@ -153,8 +150,7 @@ public sealed class SaveSyncPersistenceTests
 
             var result =
                 await service.SynchronizeAsync(
-                    trackedSave,
-                    Array.Empty<SaveVersion>(),
+                    trackedSave.Id,
                     backupPath);
 
             Assert.Equal(
@@ -163,14 +159,9 @@ public sealed class SaveSyncPersistenceTests
 
             File.Delete(savePath);
 
-            var versionsBeforeMissing =
-                await repository.GetVersionsAsync(
-                    trackedSave.Id);
-
             var missingResult =
                 await service.SynchronizeAsync(
-                    trackedSave,
-                    versionsBeforeMissing,
+                    trackedSave.Id,
                     Path.Combine(
                         temporaryDirectory,
                         "Backups",
@@ -267,14 +258,9 @@ public sealed class SaveSyncPersistenceTests
                 new SaveBackupService(),
                 repository);
 
-            var existingVersions =
-                await repository.GetVersionsAsync(
-                    trackedSave.Id);
-
             var result =
                 await service.SynchronizeAsync(
-                    trackedSave,
-                    existingVersions,
+                    trackedSave.Id,
                     backupPath);
 
             Assert.Equal(
@@ -296,7 +282,8 @@ public sealed class SaveSyncPersistenceTests
 
             Assert.NotNull(savedTrackedSave);
 
-            Assert.True(savedTrackedSave.Exists);
+            Assert.True(
+                savedTrackedSave.Exists);
 
             Assert.False(
                 string.IsNullOrWhiteSpace(

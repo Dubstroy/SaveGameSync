@@ -1,4 +1,5 @@
 ﻿using SaveGameSync.Core.Models;
+using SaveGameSync.Core.Persistence;
 using SaveGameSync.Core.Services;
 
 namespace SaveGameSync.Core.Tests;
@@ -8,7 +9,7 @@ public class SaveSyncServiceTests
     [Fact]
     public async Task SynchronizeAsync_ReturnsFileMissing_WhenSaveDoesNotExist()
     {
-        var service = CreateService();
+        var repository = new InMemorySaveRepository();
 
         var trackedSave = new TrackedSave
         {
@@ -19,9 +20,12 @@ public class SaveSyncServiceTests
                 "DS30000.sl2")
         };
 
+        await repository.AddTrackedSaveAsync(trackedSave);
+
+        var service = CreateService(repository);
+
         var result = await service.SynchronizeAsync(
-            trackedSave,
-            [],
+            trackedSave.Id,
             Path.Combine(
                 Path.GetTempPath(),
                 Guid.NewGuid().ToString(),
@@ -33,13 +37,17 @@ public class SaveSyncServiceTests
 
         Assert.Null(result.Version);
         Assert.Null(result.CurrentHash);
+
+        var savedTrackedSave =
+            await repository.GetTrackedSaveAsync(trackedSave.Id);
+
+        Assert.NotNull(savedTrackedSave);
+        Assert.False(savedTrackedSave.Exists);
     }
 
     [Fact]
     public async Task SynchronizeAsync_ReturnsNoChanges_WhenHashHasNotChanged()
     {
-        var service = CreateService();
-
         var directory = CreateTemporaryDirectory();
 
         try
@@ -64,14 +72,19 @@ public class SaveSyncServiceTests
                 CurrentHash = currentHash
             };
 
+            var repository = new InMemorySaveRepository();
+
+            await repository.AddTrackedSaveAsync(trackedSave);
+
+            var service = CreateService(repository);
+
             var backupPath = Path.Combine(
                 directory,
                 "Backups",
                 "v1.sl2");
 
             var result = await service.SynchronizeAsync(
-                trackedSave,
-                [],
+                trackedSave.Id,
                 backupPath);
 
             Assert.Equal(
@@ -94,8 +107,6 @@ public class SaveSyncServiceTests
     [Fact]
     public async Task SynchronizeAsync_CreatesVersionAndBackup_WhenSaveChanged()
     {
-        var service = CreateService();
-
         var directory = CreateTemporaryDirectory();
 
         try
@@ -115,14 +126,19 @@ public class SaveSyncServiceTests
                 CurrentHash = "OLD_HASH"
             };
 
+            var repository = new InMemorySaveRepository();
+
+            await repository.AddTrackedSaveAsync(trackedSave);
+
+            var service = CreateService(repository);
+
             var backupPath = Path.Combine(
                 directory,
                 "Backups",
                 "v1.sl2");
 
             var result = await service.SynchronizeAsync(
-                trackedSave,
-                [],
+                trackedSave.Id,
                 backupPath);
 
             Assert.Equal(
@@ -130,11 +146,13 @@ public class SaveSyncServiceTests
                 result.Status);
 
             Assert.NotNull(result.Version);
+
             Assert.Equal(
                 1,
                 result.Version.VersionNumber);
 
             Assert.NotNull(result.CurrentHash);
+
             Assert.Equal(
                 result.CurrentHash,
                 result.Version.FileHash);
@@ -147,6 +165,25 @@ public class SaveSyncServiceTests
             Assert.Equal(
                 "New Dark Souls III save data",
                 backupContent);
+
+            var savedTrackedSave =
+                await repository.GetTrackedSaveAsync(
+                    trackedSave.Id);
+
+            Assert.NotNull(savedTrackedSave);
+
+            Assert.Equal(
+                result.CurrentHash,
+                savedTrackedSave.CurrentHash);
+
+            var savedVersions =
+                await repository.GetVersionsAsync(
+                    trackedSave.Id);
+
+            Assert.Single(savedVersions);
+            Assert.Equal(
+                1,
+                savedVersions[0].VersionNumber);
         }
         finally
         {
@@ -157,8 +194,6 @@ public class SaveSyncServiceTests
     [Fact]
     public async Task SynchronizeAsync_CreatesNextVersion_WhenPreviousVersionsExist()
     {
-        var service = CreateService();
-
         var directory = CreateTemporaryDirectory();
 
         try
@@ -177,6 +212,10 @@ public class SaveSyncServiceTests
                 FilePath = savePath,
                 CurrentHash = "OLD_HASH"
             };
+
+            var repository = new InMemorySaveRepository();
+
+            await repository.AddTrackedSaveAsync(trackedSave);
 
             var existingVersions = new[]
             {
@@ -202,14 +241,20 @@ public class SaveSyncServiceTests
                 }
             };
 
+            foreach (var version in existingVersions)
+            {
+                await repository.AddVersionAsync(version);
+            }
+
+            var service = CreateService(repository);
+
             var backupPath = Path.Combine(
                 directory,
                 "Backups",
                 "v3.sl2");
 
             var result = await service.SynchronizeAsync(
-                trackedSave,
-                existingVersions,
+                trackedSave.Id,
                 backupPath);
 
             Assert.Equal(
@@ -217,11 +262,19 @@ public class SaveSyncServiceTests
                 result.Status);
 
             Assert.NotNull(result.Version);
+
             Assert.Equal(
                 3,
                 result.Version.VersionNumber);
 
             Assert.True(File.Exists(backupPath));
+
+            var versions =
+                await repository.GetVersionsAsync(
+                    trackedSave.Id);
+
+            Assert.Equal(3, versions.Count);
+            Assert.Equal(3, versions[2].VersionNumber);
         }
         finally
         {
@@ -229,13 +282,15 @@ public class SaveSyncServiceTests
         }
     }
 
-    private static SaveSyncService CreateService()
+    private static SaveSyncService CreateService(
+        ISaveRepository repository)
     {
         return new SaveSyncService(
             new SaveFileDetector(),
             new SaveChangeDetector(),
             new SaveVersionManager(),
-            new SaveBackupService());
+            new SaveBackupService(),
+            repository);
     }
 
     private static string CreateTemporaryDirectory()
@@ -247,5 +302,60 @@ public class SaveSyncServiceTests
         Directory.CreateDirectory(directory);
 
         return directory;
+    }
+
+    private sealed class InMemorySaveRepository : ISaveRepository
+    {
+        private readonly Dictionary<Guid, TrackedSave> _trackedSaves = [];
+        private readonly List<SaveVersion> _versions = [];
+
+        public Task<TrackedSave?> GetTrackedSaveAsync(
+            Guid id,
+            CancellationToken cancellationToken = default)
+        {
+            _trackedSaves.TryGetValue(id, out var trackedSave);
+
+            return Task.FromResult(trackedSave);
+        }
+
+        public Task<IReadOnlyList<SaveVersion>> GetVersionsAsync(
+            Guid trackedSaveId,
+            CancellationToken cancellationToken = default)
+        {
+            IReadOnlyList<SaveVersion> versions = _versions
+                .Where(version =>
+                    version.TrackedSaveId == trackedSaveId)
+                .OrderBy(version => version.VersionNumber)
+                .ToList();
+
+            return Task.FromResult(versions);
+        }
+
+        public Task AddTrackedSaveAsync(
+            TrackedSave trackedSave,
+            CancellationToken cancellationToken = default)
+        {
+            _trackedSaves[trackedSave.Id] = trackedSave;
+
+            return Task.CompletedTask;
+        }
+
+        public Task UpdateTrackedSaveAsync(
+            TrackedSave trackedSave,
+            CancellationToken cancellationToken = default)
+        {
+            _trackedSaves[trackedSave.Id] = trackedSave;
+
+            return Task.CompletedTask;
+        }
+
+        public Task AddVersionAsync(
+            SaveVersion version,
+            CancellationToken cancellationToken = default)
+        {
+            _versions.Add(version);
+
+            return Task.CompletedTask;
+        }
     }
 }
