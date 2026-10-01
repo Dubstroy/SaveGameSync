@@ -1,0 +1,97 @@
+﻿<Window x:Class="SaveGameSync.App.Views.AddGameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Agregar juego"
+        Height="500"
+        Width="700"
+        MinHeight="450"
+        MinWidth="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Título -->
+        <TextBlock Grid.Row="0"
+                   Text="Agregar juego"
+                   FontSize="26"
+                   FontWeight="Bold"
+                   Margin="0,0,0,24"/>
+
+        <!-- Búsqueda -->
+        <StackPanel Grid.Row="1"
+                    Margin="0,0,0,20">
+
+            <TextBlock Text="Buscar en biblioteca"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,8"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="SearchTextBox"
+                         Grid.Column="0"
+                         Height="34"
+                         VerticalContentAlignment="Center"
+                         Margin="0,0,10,0"/>
+
+                <Button Grid.Column="1"
+                        Content="Buscar"
+                        Width="90"
+                        Height="34"
+                        Click="SearchButton_Click"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Resultados -->
+        <Border Grid.Row="2"
+                BorderBrush="LightGray"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="12">
+
+            <StackPanel>
+
+                <TextBlock Text="Juegos encontrados"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,12"/>
+
+                <ListBox x:Name="GamesListBox"
+                         BorderThickness="0"/>
+
+            </StackPanel>
+        </Border>
+
+        <!-- Acciones -->
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,20,0,0">
+
+            <Button Content="Agregar manualmente"
+                    Width="160"
+                    Height="36"
+                    Margin="0,0,10,0"
+                    Click="AddManuallyButton_Click"/>
+
+            <Button Content="Cancelar"
+                    Width="100"
+                    Height="36"
+                    Click="CancelButton_Click"/>
+
+        </StackPanel>
+
+    </Grid>
+</Window>

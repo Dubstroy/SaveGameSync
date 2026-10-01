@@ -25,8 +25,17 @@ public sealed class SqliteSaveRepositoryTests
 
             var repository = new SqliteSaveRepository(db);
 
+            var game = new Game
+            {
+                Name = "Dark Souls III"
+            };
+
+            db.Games.Add(game);
+            await db.SaveChangesAsync();
+
             var trackedSave = new TrackedSave
             {
+                GameId = game.Id,
                 Name = "Dark Souls III",
                 FilePath = @"C:\Test\DS30000.sl2",
                 Exists = true,
@@ -76,8 +85,18 @@ public sealed class SqliteSaveRepositoryTests
 
             var repository = new SqliteSaveRepository(db);
 
-            var trackedSave = new TrackedSave
+            var game = new Game
             {
+                Name = "Dark Souls III"
+            };
+
+            db.Games.Add(game);
+            await db.SaveChangesAsync();
+
+            var trackedSave = new TrackedSave
+
+            {
+                GameId = game.Id,
                 Name = "Dark Souls III",
                 FilePath = @"C:\Test\DS30000.sl2",
                 Exists = true,
@@ -127,8 +146,17 @@ public sealed class SqliteSaveRepositoryTests
 
             var repository = new SqliteSaveRepository(db);
 
+            var game = new Game
+            {
+                Name = "Dark Souls III"
+            };
+
+            db.Games.Add(game);
+            await db.SaveChangesAsync();
+
             var trackedSave = new TrackedSave
             {
+                GameId = game.Id,
                 Name = "Dark Souls III",
                 FilePath = @"C:\Test\DS30000.sl2",
                 Exists = true
@@ -202,8 +230,17 @@ public sealed class SqliteSaveRepositoryTests
 
             var repository = new SqliteSaveRepository(db);
 
+            var game = new Game
+            {
+                Name = "Dark Souls III"
+            };
+
+            db.Games.Add(game);
+            await db.SaveChangesAsync();
+
             var trackedSave = new TrackedSave
             {
+                GameId = game.Id,
                 Name = "Dark Souls III",
                 FilePath = @"C:\Test\DS30000.sl2",
                 Exists = true,

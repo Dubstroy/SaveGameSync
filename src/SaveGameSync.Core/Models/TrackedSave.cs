@@ -4,6 +4,10 @@ public sealed class TrackedSave
 {
     public Guid Id { get; init; } = Guid.NewGuid();
 
+    public Guid GameId { get; set; }
+
+    public Game? Game { get; set; }
+
     public required string Name { get; init; }
 
     public required string FilePath { get; init; }

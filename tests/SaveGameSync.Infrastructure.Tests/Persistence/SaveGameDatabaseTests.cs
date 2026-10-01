@@ -1,7 +1,7 @@
-﻿using SaveGameSync.Core.Models;
-using SaveGameSync.Infrastructure.Persistence;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
+using SaveGameSync.Core.Models;
+using SaveGameSync.Infrastructure.Persistence;
 
 namespace SaveGameSync.Infrastructure.Tests.Persistence;
 
@@ -27,8 +27,16 @@ public sealed class SaveGameDatabaseTests
 
                 await database.InitializeAsync();
 
+                var game = new Game
+                {
+                    Name = "Dark Souls III"
+                };
+
+                db.Games.Add(game);
+
                 var trackedSave = new TrackedSave
                 {
+                    GameId = game.Id,
                     Name = "Dark Souls III",
                     FilePath = @"C:\Test\DS30000.sl2",
                     Exists = true,
@@ -64,10 +72,12 @@ public sealed class SaveGameDatabaseTests
         finally
         {
             SqliteConnection.ClearAllPools();
-            
+
             if (Directory.Exists(temporaryDirectory))
             {
-                Directory.Delete(temporaryDirectory, recursive: true);
+                Directory.Delete(
+                    temporaryDirectory,
+                    recursive: true);
             }
         }
     }

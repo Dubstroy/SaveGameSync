@@ -11,15 +11,33 @@ public sealed class SaveGameDbContext : DbContext
     {
     }
 
+    public DbSet<Game> Games => Set<Game>();
+
     public DbSet<TrackedSave> TrackedSaves => Set<TrackedSave>();
 
     public DbSet<SaveVersion> SaveVersions => Set<SaveVersion>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Game>(entity =>
+        {
+            entity.HasKey(game => game.Id);
+
+            entity.Property(game => game.Name)
+                .IsRequired();
+
+            entity.HasMany(game => game.TrackedSaves)
+                .WithOne(save => save.Game)
+                .HasForeignKey(save => save.GameId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
         modelBuilder.Entity<TrackedSave>(entity =>
         {
             entity.HasKey(save => save.Id);
+
+            entity.Property(save => save.GameId)
+                .IsRequired();
 
             entity.Property(save => save.Name)
                 .IsRequired();

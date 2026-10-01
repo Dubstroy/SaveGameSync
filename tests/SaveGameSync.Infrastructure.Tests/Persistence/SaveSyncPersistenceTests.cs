@@ -34,10 +34,19 @@ public sealed class SaveSyncPersistenceTests
             await database.InitializeAsync();
 
             var repository =
-                new SqliteSaveRepository(db);
+    new SqliteSaveRepository(db);
+
+            var game = new Game
+            {
+                Name = "Dark Souls III"
+            };
+
+            db.Games.Add(game);
+            await db.SaveChangesAsync();
 
             var trackedSave = new TrackedSave
             {
+                GameId = game.Id,
                 Name = "Dark Souls III",
                 FilePath = savePath,
                 Exists = true,
@@ -129,10 +138,19 @@ public sealed class SaveSyncPersistenceTests
             await database.InitializeAsync();
 
             var repository =
-                new SqliteSaveRepository(db);
+    new SqliteSaveRepository(db);
+
+            var game = new Game
+            {
+                Name = "Dark Souls III"
+            };
+
+            db.Games.Add(game);
+            await db.SaveChangesAsync();
 
             var trackedSave = new TrackedSave
             {
+                GameId = game.Id,
                 Name = "Dark Souls III",
                 FilePath = savePath,
                 Exists = true
@@ -239,10 +257,19 @@ public sealed class SaveSyncPersistenceTests
             await database.InitializeAsync();
 
             var repository =
-                new SqliteSaveRepository(db);
+    new SqliteSaveRepository(db);
+
+            var game = new Game
+            {
+                Name = "Dark Souls III"
+            };
+
+            db.Games.Add(game);
+            await db.SaveChangesAsync();
 
             var trackedSave = new TrackedSave
             {
+                GameId = game.Id,
                 Name = "Dark Souls III",
                 FilePath = savePath,
                 Exists = true

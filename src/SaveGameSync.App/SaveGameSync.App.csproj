@@ -8,4 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SaveGameSync.Core\SaveGameSync.Core.csproj" />
+    <ProjectReference Include="..\SaveGameSync.Infrastructure\SaveGameSync.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

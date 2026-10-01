@@ -29,12 +29,22 @@ public sealed class SaveVersionPersistenceTests
 
                 await database.InitializeAsync();
 
+                var game = new Game
+                {
+                    Name = "Dark Souls III"
+                };
+
+                db.Games.Add(game);
+
                 var trackedSave = new TrackedSave
                 {
+                    GameId = game.Id,
                     Name = "Dark Souls III",
                     FilePath = @"C:\Test\DS30000.sl2",
                     Exists = true
                 };
+
+                db.TrackedSaves.Add(trackedSave);
 
                 db.TrackedSaves.Add(trackedSave);
 
