@@ -104,9 +104,9 @@ public partial class MainWindow : Window
         return button;
     }
 
-    private void GameCard_Click(
-        object sender,
-        RoutedEventArgs e)
+    private async void GameCard_Click(
+    object sender,
+    RoutedEventArgs e)
     {
         if (sender is not Button button ||
             button.Tag is not Game game)
@@ -114,10 +114,107 @@ public partial class MainWindow : Window
             return;
         }
 
-        MessageBox.Show(
-            $"Seleccionaste: {game.Name}",
-            "SaveGameSync",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+        try
+        {
+            var selectedGame =
+                await ((App)Application.Current)
+                    .Services
+                    .GameService
+                    .GetGameAsync(game.Id);
+
+            if (selectedGame is null)
+            {
+                MessageBox.Show(
+                    "No se pudo encontrar el juego.",
+                    "SaveGameSync",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                return;
+            }
+
+            SelectedGameNameTextBlock.Text =
+                selectedGame.Name;
+
+            SelectedGameOriginTextBlock.Text =
+                $"Origen: {selectedGame.Origin}";
+
+            SelectedGamePathTextBlock.Text =
+                $"Carpeta del guardado: {selectedGame.SaveFolderPath}";
+
+            LoadTrackedSaves(selectedGame);
+
+            LibraryView.Visibility =
+                Visibility.Collapsed;
+
+            GameView.Visibility =
+                Visibility.Visible;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"No se pudo cargar el juego.\n\n{ex.Message}",
+                "SaveGameSync",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private void LoadTrackedSaves(Game game)
+    {
+        TrackedSavesPanel.Children.Clear();
+
+        foreach (var save in game.TrackedSaves)
+        {
+            var panel = new StackPanel
+            {
+                Margin = new Thickness(4, 6, 4, 6)
+            };
+
+            var name = new TextBlock
+            {
+                Text = save.Name,
+                FontSize = 15,
+                FontWeight = FontWeights.SemiBold
+            };
+
+            var path = new TextBlock
+            {
+                Text = save.FilePath,
+                Foreground = Brushes.Gray,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 12,
+                Margin = new Thickness(0, 4, 0, 0)
+            };
+
+            var status = new TextBlock
+            {
+                Text = save.Exists
+                    ? "● Archivo encontrado"
+                    : "● Archivo no encontrado",
+                Foreground = save.Exists
+                    ? Brushes.Green
+                    : Brushes.Red,
+                FontSize = 12,
+                Margin = new Thickness(0, 4, 0, 0)
+            };
+
+            panel.Children.Add(name);
+            panel.Children.Add(path);
+            panel.Children.Add(status);
+
+            TrackedSavesPanel.Children.Add(panel);
+        }
+    }
+
+    private void BackToLibraryButton_Click(
+    object sender,
+    RoutedEventArgs e)
+    {
+        GameView.Visibility =
+            Visibility.Collapsed;
+
+        LibraryView.Visibility =
+            Visibility.Visible;
     }
 }

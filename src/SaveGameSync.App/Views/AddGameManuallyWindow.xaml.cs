@@ -1,6 +1,8 @@
 ﻿using SaveGameSync.Core.Services;
 using System.Windows;
 using System.Windows.Controls;
+using SaveGameSync.Core.Models;
+using SaveGameSync.Core.Services;
 
 namespace SaveGameSync.App.Views;
 
@@ -12,6 +14,15 @@ public partial class AddGameManuallyWindow : Window
     }
 
     public bool GameAdded { get; private set; }
+
+    public string GameName { get; private set; } = string.Empty;
+
+    public string GameOrigin { get; private set; } = string.Empty;
+
+    public string SaveFolderPath { get; private set; } = string.Empty;
+
+    public IReadOnlyList<SaveFileCandidate> SelectedFiles { get; private set; }
+        = [];
 
     private void BrowseButton_Click(
     object sender,
@@ -95,8 +106,16 @@ public partial class AddGameManuallyWindow : Window
             var selectedFiles =
                 selectionWindow.SelectedFiles;
 
+            SelectedFiles = selectionWindow.SelectedFiles;
+
+            GameName = GameNameTextBox.Text.Trim();
+
+            GameOrigin = selectedOrigin.Content?.ToString() ?? string.Empty;
+
+            SaveFolderPath = SavePathTextBox.Text.Trim();
+
             MessageBox.Show(
-                $"Se seleccionaron {selectedFiles.Count} archivo(s).",
+                $"Se seleccionaron {SelectedFiles.Count} archivo(s).",
                 "SaveGameSync",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);

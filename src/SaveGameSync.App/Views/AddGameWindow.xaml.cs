@@ -20,7 +20,7 @@ public partial class AddGameWindow : Window
             MessageBoxImage.Information);
     }
 
-    private void AddManuallyButton_Click(
+    private async void AddManuallyButton_Click(
     object sender,
     RoutedEventArgs e)
     {
@@ -29,12 +29,34 @@ public partial class AddGameWindow : Window
             Owner = this
         };
 
-        if (window.ShowDialog() == true &&
-            window.GameAdded)
+        if (window.ShowDialog() != true ||
+            !window.GameAdded)
         {
+            return;
+        }
+
+        try
+        {
+            await ((App)Application.Current)
+                .Services
+                .GameService
+                .CreateGameWithTrackedSavesAsync(
+                    window.GameName,
+                    window.GameOrigin,
+                    window.SaveFolderPath,
+                    window.SelectedFiles);
+
             DialogResult = true;
         }
-    }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"No se pudo guardar el juego.\n\n{ex.Message}",
+                "SaveGameSync",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    } 
 
     private void CancelButton_Click(
         object sender,

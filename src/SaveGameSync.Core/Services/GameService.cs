@@ -56,6 +56,67 @@ public sealed class GameService
         return game;
     }
 
+    public async Task<Game> CreateGameWithTrackedSavesAsync(
+    string name,
+    string origin,
+    string saveFolderPath,
+    IReadOnlyList<SaveFileCandidate> selectedFiles,
+    CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException(
+                "Game name cannot be empty.",
+                nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(origin))
+        {
+            throw new ArgumentException(
+                "Game origin cannot be empty.",
+                nameof(origin));
+        }
+
+        if (string.IsNullOrWhiteSpace(saveFolderPath))
+        {
+            throw new ArgumentException(
+                "Save folder path cannot be empty.",
+                nameof(saveFolderPath));
+        }
+
+        if (selectedFiles is null || selectedFiles.Count == 0)
+        {
+            throw new ArgumentException(
+                "At least one save file must be selected.",
+                nameof(selectedFiles));
+        }
+
+        var game = new Game
+        {
+            Name = name.Trim(),
+            Origin = origin.Trim(),
+            SaveFolderPath = saveFolderPath.Trim()
+        };
+
+        foreach (var file in selectedFiles)
+        {
+            game.TrackedSaves.Add(
+                new TrackedSave
+                {
+                    GameId = game.Id,
+                    Name = file.Name,
+                    FilePath = file.FilePath,
+                    Exists = true
+                });
+        }
+
+        await _repository.AddGameAsync(
+            game,
+            cancellationToken);
+
+        return game;
+    }
+
     public async Task<TrackedSave> AddTrackedSaveAsync(
     Guid gameId,
     string name,
