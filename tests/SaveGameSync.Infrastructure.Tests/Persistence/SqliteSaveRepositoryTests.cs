@@ -20,14 +20,17 @@ public sealed class SqliteSaveRepositoryTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
             await database.InitializeAsync();
 
             var repository = new SqliteSaveRepository(db);
 
             var game = new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam"
             };
 
             db.Games.Add(game);
@@ -80,14 +83,17 @@ public sealed class SqliteSaveRepositoryTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
             await database.InitializeAsync();
 
             var repository = new SqliteSaveRepository(db);
 
             var game = new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam"
             };
 
             db.Games.Add(game);
@@ -141,14 +147,17 @@ public sealed class SqliteSaveRepositoryTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
             await database.InitializeAsync();
 
             var repository = new SqliteSaveRepository(db);
 
             var game = new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam"
             };
 
             db.Games.Add(game);
@@ -225,14 +234,17 @@ public sealed class SqliteSaveRepositoryTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
             await database.InitializeAsync();
 
             var repository = new SqliteSaveRepository(db);
 
             var game = new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam"
             };
 
             db.Games.Add(game);

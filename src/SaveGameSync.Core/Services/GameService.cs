@@ -6,15 +6,20 @@ namespace SaveGameSync.Core.Services;
 public sealed class GameService
 {
     private readonly IGameRepository _repository;
+    private readonly ISaveRepository _saveRepository;
 
-    public GameService(IGameRepository repository)
+    public GameService(
+        IGameRepository repository,
+        ISaveRepository saveRepository)
     {
         _repository = repository;
+        _saveRepository = saveRepository;
     }
 
     public async Task<Game> CreateGameAsync(
-        string name,
-        CancellationToken cancellationToken = default)
+    string name,
+    string origin,
+    CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -23,9 +28,17 @@ public sealed class GameService
                 nameof(name));
         }
 
+        if (string.IsNullOrWhiteSpace(origin))
+        {
+            throw new ArgumentException(
+                "Game origin cannot be empty.",
+                nameof(origin));
+        }
+
         var game = new Game
         {
-            Name = name.Trim()
+            Name = name.Trim(),
+            Origin = origin.Trim()
         };
 
         await _repository.AddGameAsync(
@@ -73,10 +86,12 @@ public sealed class GameService
                 $"Game '{id}' was not found.");
         }
 
+
         var updatedGame = new Game
         {
             Id = game.Id,
-            Name = name.Trim()
+            Name = name.Trim(),
+            Origin = game.Origin
         };
 
         await _repository.UpdateGameAsync(

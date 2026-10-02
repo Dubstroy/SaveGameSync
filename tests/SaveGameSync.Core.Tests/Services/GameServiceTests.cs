@@ -10,10 +10,15 @@ public sealed class GameServiceTests
     public async Task CreateGameAsync_ShouldCreateAndPersistGame()
     {
         var repository = new InMemoryGameRepository();
-        var service = new GameService(repository);
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
 
         var game = await service.CreateGameAsync(
-            "Dark Souls III");
+            "Dark Souls III",
+            "Steam");
 
         Assert.NotEqual(
             Guid.Empty,
@@ -37,10 +42,15 @@ public sealed class GameServiceTests
     public async Task CreateGameAsync_ShouldTrimGameName()
     {
         var repository = new InMemoryGameRepository();
-        var service = new GameService(repository);
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
 
         var game = await service.CreateGameAsync(
-            "  Dark Souls III  ");
+            "  Dark Souls III  ",
+            "Steam");
 
         Assert.Equal(
             "Dark Souls III",
@@ -51,10 +61,14 @@ public sealed class GameServiceTests
     public async Task CreateGameAsync_ShouldRejectEmptyName()
     {
         var repository = new InMemoryGameRepository();
-        var service = new GameService(repository);
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
 
         await Assert.ThrowsAsync<ArgumentException>(
-            () => service.CreateGameAsync("   "));
+            () => service.CreateGameAsync("   ", "Steam"));
     }
 
     [Fact]
@@ -64,18 +78,24 @@ public sealed class GameServiceTests
 
         var firstGame = new Game
         {
-            Name = "Dark Souls III"
+            Name = "Dark Souls III",
+            Origin = "Steam"
         };
 
         var secondGame = new Game
         {
-            Name = "Dark Souls Remastered"
+            Name = "Dark Souls Remastered",
+            Origin = "Steam"
         };
 
         await repository.AddGameAsync(firstGame);
         await repository.AddGameAsync(secondGame);
 
-        var service = new GameService(repository);
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
 
         var games = await service.GetAllGamesAsync();
 
@@ -99,12 +119,17 @@ public sealed class GameServiceTests
 
         var game = new Game
         {
-            Name = "Dark Souls III"
+            Name = "Dark Souls III",
+            Origin = "Steam"
         };
 
         await repository.AddGameAsync(game);
 
-        var service = new GameService(repository);
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
 
         var result = await service.GetGameAsync(
             game.Id);
@@ -124,7 +149,11 @@ public sealed class GameServiceTests
     public async Task GetGameAsync_ShouldReturnNullForUnknownId()
     {
         var repository = new InMemoryGameRepository();
-        var service = new GameService(repository);
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
 
         var result = await service.GetGameAsync(
             Guid.NewGuid());
@@ -139,12 +168,17 @@ public sealed class GameServiceTests
 
         var game = new Game
         {
-            Name = "Dark Souls"
+            Name = "Dark Souls",
+            Origin = "Steam"
         };
 
         await repository.AddGameAsync(game);
 
-        var service = new GameService(repository);
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
 
         await service.UpdateGameNameAsync(
             game.Id,
@@ -167,12 +201,17 @@ public sealed class GameServiceTests
 
         var game = new Game
         {
-            Name = "Dark Souls III"
+            Name = "Dark Souls III",
+            Origin = "Steam"
         };
 
         await repository.AddGameAsync(game);
 
-        var service = new GameService(repository);
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
 
         await Assert.ThrowsAsync<ArgumentException>(
             () => service.UpdateGameNameAsync(
@@ -180,11 +219,16 @@ public sealed class GameServiceTests
                 "   "));
     }
 
+
     [Fact]
     public async Task UpdateGameNameAsync_ShouldRejectUnknownGame()
     {
         var repository = new InMemoryGameRepository();
-        var service = new GameService(repository);
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => service.UpdateGameNameAsync(
@@ -192,6 +236,92 @@ public sealed class GameServiceTests
                 "Dark Souls III"));
     }
 
+    [Fact]
+    public async Task CreateGameAsync_ShouldPersistOrigin()
+    {
+        var repository = new InMemoryGameRepository();
+        var saveRepository = new InMemorySaveRepository();
+
+        var service = new GameService(
+            repository,
+            saveRepository);
+
+        var game = await service.CreateGameAsync(
+            "Dark Souls III",
+            "Steam");
+
+        var savedGame = await repository.GetGameAsync(game.Id);
+
+        Assert.NotNull(savedGame);
+        Assert.Equal("Steam", savedGame.Origin);
+    }
+
+    private sealed class InMemorySaveRepository : ISaveRepository
+    {
+        private readonly List<TrackedSave> _trackedSaves = [];
+        private readonly List<SaveVersion> _versions = [];
+
+        public Task<TrackedSave?> GetTrackedSaveAsync(
+            Guid id,
+            CancellationToken cancellationToken = default)
+        {
+            var trackedSave = _trackedSaves
+                .SingleOrDefault(save => save.Id == id);
+
+            return Task.FromResult(trackedSave);
+        }
+
+        public Task<IReadOnlyList<SaveVersion>> GetVersionsAsync(
+            Guid trackedSaveId,
+            CancellationToken cancellationToken = default)
+        {
+            IReadOnlyList<SaveVersion> versions = _versions
+                .Where(version => version.TrackedSaveId == trackedSaveId)
+                .OrderBy(version => version.VersionNumber)
+                .ToList();
+
+            return Task.FromResult(versions);
+        }
+
+        public Task AddTrackedSaveAsync(
+            TrackedSave trackedSave,
+            CancellationToken cancellationToken = default)
+        {
+            _trackedSaves.Add(trackedSave);
+
+            return Task.CompletedTask;
+        }
+
+        public Task UpdateTrackedSaveAsync(
+            TrackedSave trackedSave,
+            CancellationToken cancellationToken = default)
+        {
+            var existingSave = _trackedSaves
+                .SingleOrDefault(
+                    existing => existing.Id == trackedSave.Id);
+
+            if (existingSave is null)
+            {
+                throw new InvalidOperationException(
+                    $"Tracked save '{trackedSave.Id}' was not found.");
+            }
+
+            var index = _trackedSaves.IndexOf(existingSave);
+
+            _trackedSaves[index] = trackedSave;
+
+            return Task.CompletedTask;
+        }
+
+        public Task AddVersionAsync(
+            SaveVersion version,
+            CancellationToken cancellationToken = default)
+        {
+            _versions.Add(version);
+
+            return Task.CompletedTask;
+        }
+    }
     private sealed class InMemoryGameRepository : IGameRepository
     {
         private readonly List<Game> _games = [];

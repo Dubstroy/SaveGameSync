@@ -26,6 +26,9 @@ public sealed class SaveGameDbContext : DbContext
             entity.Property(game => game.Name)
                 .IsRequired();
 
+            entity.Property(game => game.Origin)
+                .IsRequired();
+
             entity.HasMany(game => game.TrackedSaves)
                 .WithOne(save => save.Game)
                 .HasForeignKey(save => save.GameId)

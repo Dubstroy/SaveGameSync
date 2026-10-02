@@ -1,0 +1,91 @@
+﻿<Window x:Class="SaveGameSync.App.Views.DatabaseMigrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Base de datos desactualizada"
+        Width="583"
+        Height="402"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="SingleBorderWindow"
+        ShowInTaskbar="False">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Base de datos desactualizada"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Margin="0,0,0,12"/>
+
+        <TextBlock Grid.Row="1"
+                   TextWrapping="Wrap"
+                   FontSize="14"
+                   Text="La base de datos de SaveGameSync necesita una actualización para poder continuar. Antes de realizar la migración, elige si deseas conservar una copia de seguridad."/>
+
+        <StackPanel Grid.Row="2"
+                    Margin="0,20,0,0">
+
+            <TextBlock Text="¿Qué deseas hacer antes de actualizar?"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,12"/>
+
+            <RadioButton x:Name="BackupRadioButton"
+                         Content="Crear backup de la base de datos"
+                         FontSize="14"
+                         GroupName="BackupOption"
+                         Checked="BackupRadioButton_Checked"
+                         Margin="0,0,0,4"/>
+
+            <TextBlock Text="Se conservará una copia de seguridad de la base de datos actual."
+                       TextWrapping="Wrap"
+                       Foreground="Gray"
+                       Margin="24,0,0,14"/>
+
+            <RadioButton x:Name="NoBackupRadioButton"
+                         Content="No crear backup"
+                         FontSize="14"
+                         GroupName="BackupOption"
+                         Checked="NoBackupRadioButton_Checked"
+                         Margin="0,0,0,4"/>
+
+            <TextBlock Text="La migración se realizará sin crear una copia de seguridad."
+                       TextWrapping="Wrap"
+                       Foreground="Gray"
+                       Margin="24,0,0,14"/>
+
+            <TextBlock x:Name="WarningTextBlock"
+                       Text="Selecciona una de las opciones para continuar."
+                       Foreground="DarkOrange"
+                       FontWeight="SemiBold"
+                       TextWrapping="Wrap"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,20,0,0">
+
+            <Button x:Name="CancelButton"
+                    Content="Cancelar"
+                    Width="110"
+                    Height="36"
+                    Margin="0,0,10,0"
+                    Click="CancelButton_Click"/>
+
+            <Button x:Name="MigrateButton"
+                    Content="Realizar migración"
+                    Width="150"
+                    Height="36"
+                    IsEnabled="False"
+                    Click="MigrateButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

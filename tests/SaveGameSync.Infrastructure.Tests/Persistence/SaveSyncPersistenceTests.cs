@@ -29,7 +29,9 @@ public sealed class SaveSyncPersistenceTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
 
             await database.InitializeAsync();
 
@@ -38,7 +40,8 @@ public sealed class SaveSyncPersistenceTests
 
             var game = new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam"
             };
 
             db.Games.Add(game);
@@ -133,7 +136,9 @@ public sealed class SaveSyncPersistenceTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
 
             await database.InitializeAsync();
 
@@ -142,7 +147,8 @@ public sealed class SaveSyncPersistenceTests
 
             var game = new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam"
             };
 
             db.Games.Add(game);
@@ -252,7 +258,9 @@ public sealed class SaveSyncPersistenceTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
 
             await database.InitializeAsync();
 
@@ -261,7 +269,8 @@ public sealed class SaveSyncPersistenceTests
 
             var game = new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam"
             };
 
             db.Games.Add(game);

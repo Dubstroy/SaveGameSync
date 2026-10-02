@@ -23,13 +23,16 @@ public sealed class SaveGameDatabaseTests
         {
             await using (var db = SaveGameDatabaseFactory.Create(databasePath))
             {
-                var database = new SaveGameDatabase(db);
+                var database = new SaveGameDatabase(
+                db,
+                databasePath);
 
                 await database.InitializeAsync();
 
                 var game = new Game
                 {
-                    Name = "Dark Souls III"
+                    Name = "Dark Souls III",
+                    Origin = "Steam"
                 };
 
                 db.Games.Add(game);

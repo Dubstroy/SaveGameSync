@@ -20,7 +20,9 @@ public sealed class GameRepositoryTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
 
             await database.InitializeAsync();
 
@@ -28,7 +30,8 @@ public sealed class GameRepositoryTests
 
             var game = new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam",
             };
 
             await repository.AddGameAsync(game);
@@ -73,7 +76,9 @@ public sealed class GameRepositoryTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
 
             await database.InitializeAsync();
 
@@ -81,17 +86,20 @@ public sealed class GameRepositoryTests
 
             await repository.AddGameAsync(new Game
             {
-                Name = "The Witcher 3"
+                Name = "The Witcher 3",
+                Origin = "Steam"
             });
 
             await repository.AddGameAsync(new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam"
             });
 
             await repository.AddGameAsync(new Game
             {
-                Name = "Elden Ring"
+                Name = "Elden Ring",
+                Origin = "Steam"
             });
 
             var games =
@@ -138,7 +146,9 @@ public sealed class GameRepositoryTests
             await using var db =
                 SaveGameDatabaseFactory.Create(databasePath);
 
-            var database = new SaveGameDatabase(db);
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
 
             await database.InitializeAsync();
 
@@ -146,7 +156,8 @@ public sealed class GameRepositoryTests
 
             var game = new Game
             {
-                Name = "Dark Souls III"
+                Name = "Dark Souls III",
+                Origin = "Steam"
             };
 
             await repository.AddGameAsync(game);
@@ -154,7 +165,8 @@ public sealed class GameRepositoryTests
             var updatedGame = new Game
             {
                 Id = game.Id,
-                Name = "Dark Souls III - Updated"
+                Name = "Dark Souls III - Updated",
+                Origin = "Steam"
             };
 
             await repository.UpdateGameAsync(updatedGame);
@@ -192,4 +204,62 @@ public sealed class GameRepositoryTests
 
         return directory;
     }
+
+    [Fact]
+    public async Task AddGameAsync_ShouldPersistOrigin()
+    {
+        var temporaryDirectory = CreateTemporaryDirectory();
+
+        var databasePath = Path.Combine(
+            temporaryDirectory,
+            "SaveGameSync.db");
+
+        try
+        {
+            await using var db =
+                SaveGameDatabaseFactory.Create(databasePath);
+
+            var database = new SaveGameDatabase(
+                db,
+                databasePath);
+
+            await database.InitializeAsync();
+
+            var repository = new SqliteGameRepository(db);
+
+            var game = new Game
+            {
+                Name = "Dark Souls III",
+                Origin = "Steam"
+            };
+
+            await repository.AddGameAsync(game);
+
+            var savedGame =
+                await repository.GetGameAsync(game.Id);
+
+            Assert.NotNull(savedGame);
+
+            Assert.Equal(
+                "Dark Souls III",
+                savedGame.Name);
+
+            Assert.Equal(
+                "Steam",
+                savedGame.Origin);
+        }
+        finally
+        {
+            SqliteConnection.ClearAllPools();
+
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(
+                    temporaryDirectory,
+                    recursive: true);
+            }
+        }
+    }
 }
+
+

@@ -1,0 +1,132 @@
+﻿<Window x:Class="SaveGameSync.App.Views.AddGameManuallyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Agregar juego"
+        Height="514"
+        Width="864"
+        MinHeight="380"
+        MinWidth="550"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Título -->
+        <TextBlock Grid.Row="0"
+                   Text="Agregar juego manualmente"
+                   FontSize="26"
+                   FontWeight="Bold"
+                   Margin="0,0,0,24"/>
+
+        <!-- Nombre -->
+        <StackPanel Grid.Row="1"
+                    Margin="0,0,0,18">
+
+            <TextBlock Text="Nombre del juego"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,8"/>
+
+            <TextBox x:Name="GameNameTextBox"
+                     Height="36"
+                     VerticalContentAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Origen -->
+        <StackPanel Grid.Row="2"
+            Margin="0,0,0,18">
+
+            <TextBlock Text="Origen"
+               FontSize="15"
+               FontWeight="SemiBold"
+               Margin="0,0,0,8"/>
+
+            <ComboBox x:Name="OriginComboBox"
+              Height="36"
+              VerticalContentAlignment="Center"
+              SelectedIndex="0">
+
+                <ComboBoxItem Content="Steam"/>
+                <ComboBoxItem Content="Steam / Modificación"/>
+                <ComboBoxItem Content="Epic Games"/>
+                <ComboBoxItem Content="Epic Games / Modificación"/>
+                <ComboBoxItem Content="GOG"/>
+                <ComboBoxItem Content="GOG / Modificación"/>
+                <ComboBoxItem Content="Otro"/>
+
+            </ComboBox>
+
+        </StackPanel>
+
+        <!-- Ruta -->
+        <StackPanel Grid.Row="3"
+                    Margin="0,0,0,18">
+
+            <TextBlock Text="Carpeta del guardado"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,8"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="SavePathTextBox"
+                         Grid.Column="0"
+                         Height="36"
+                         VerticalContentAlignment="Center"
+                         IsReadOnly="True"
+                         Margin="0,0,10,0"/>
+
+                <Button Grid.Column="1"
+                        Content="Examinar..."
+                        Width="100"
+                        Height="36"
+                        Click="BrowseButton_Click"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Información -->
+        <Border Grid.Row="4"
+                Background="#F5F5F5"
+                CornerRadius="8"
+                Padding="16"
+                VerticalAlignment="Top">
+
+            <TextBlock Text="Selecciona la carpeta donde el juego guarda sus archivos. Esta ruta se utilizará posteriormente para crear y gestionar las copias de seguridad."
+                       TextWrapping="Wrap"
+                       Foreground="Gray"/>
+        </Border>
+
+        <!-- Botones -->
+        <StackPanel Grid.Row="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,20,0,0">
+
+            <Button Content="Cancelar"
+                    Width="100"
+                    Height="36"
+                    Margin="0,0,10,0"
+                    Click="CancelButton_Click"/>
+
+            <Button Content="Agregar"
+                    Width="100"
+                    Height="36"
+                    Click="AddButton_Click"/>
+
+        </StackPanel>
+
+    </Grid>
+</Window>

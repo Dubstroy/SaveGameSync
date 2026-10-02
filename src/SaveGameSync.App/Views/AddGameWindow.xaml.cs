@@ -21,14 +21,15 @@ public partial class AddGameWindow : Window
     }
 
     private void AddManuallyButton_Click(
-        object sender,
-        RoutedEventArgs e)
+    object sender,
+    RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "La configuración manual se implementará en el siguiente paso.",
-            "SaveGameSync",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+        var window = new AddGameManuallyWindow
+        {
+            Owner = this
+        };
+
+        window.ShowDialog();
     }
 
     private void CancelButton_Click(

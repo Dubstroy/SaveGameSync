@@ -6,5 +6,10 @@ public sealed class Game
 
     public required string Name { get; init; }
 
+    public required string Origin { get; init; }
+
+    public string? TestMigration { get; set; }
+
     public List<TrackedSave> TrackedSaves { get; init; } = [];
+
 }

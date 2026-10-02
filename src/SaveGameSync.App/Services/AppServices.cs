@@ -7,14 +7,22 @@ public sealed class AppServices : IDisposable
 {
     private readonly SaveGameDbContext _dbContext;
 
+    public SaveGameDatabase Database { get; }
+
     public GameService GameService { get; }
+
+    public IReadOnlyList<string> PendingMigrations { get; }
 
     private AppServices(
         SaveGameDbContext dbContext,
-        GameService gameService)
+        SaveGameDatabase database,
+        GameService gameService,
+        IReadOnlyList<string> pendingMigrations)
     {
         _dbContext = dbContext;
+        Database = database;
         GameService = gameService;
+        PendingMigrations = pendingMigrations;
     }
 
     public static async Task<AppServices> CreateAsync(
@@ -25,19 +33,30 @@ public sealed class AppServices : IDisposable
             SaveGameDatabaseFactory.Create(databasePath);
 
         var database =
-            new SaveGameDatabase(dbContext);
+            new SaveGameDatabase(
+                dbContext,
+                databasePath);
 
-        await database.InitializeAsync();
+        var pendingMigrations =
+            await database.GetPendingMigrationsAsync(
+                cancellationToken);
 
         var gameRepository =
             new SqliteGameRepository(dbContext);
 
+        var saveRepository =
+            new SqliteSaveRepository(dbContext);
+
         var gameService =
-            new GameService(gameRepository);
+            new GameService(
+                gameRepository,
+                saveRepository);
 
         return new AppServices(
             dbContext,
-            gameService);
+            database,
+            gameService,
+            pendingMigrations);
     }
 
     public void Dispose()
