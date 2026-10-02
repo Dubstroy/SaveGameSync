@@ -207,4 +207,13 @@ public sealed class GameService
             updatedGame,
             cancellationToken);
     }
+
+    public async Task<IReadOnlyList<SaveVersion>> GetVersionsAsync(
+    Guid trackedSaveId,
+    CancellationToken cancellationToken = default)
+    {
+        return await _saveRepository.GetVersionsAsync(
+            trackedSaveId,
+            cancellationToken);
+    }
 }

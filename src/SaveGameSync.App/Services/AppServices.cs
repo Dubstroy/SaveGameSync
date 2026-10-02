@@ -11,17 +11,21 @@ public sealed class AppServices : IDisposable
 
     public GameService GameService { get; }
 
+    public SaveSyncService SaveSyncService { get; }
+
     public IReadOnlyList<string> PendingMigrations { get; }
 
     private AppServices(
-        SaveGameDbContext dbContext,
-        SaveGameDatabase database,
-        GameService gameService,
-        IReadOnlyList<string> pendingMigrations)
+    SaveGameDbContext dbContext,
+    SaveGameDatabase database,
+    GameService gameService,
+    SaveSyncService saveSyncService,
+    IReadOnlyList<string> pendingMigrations)
     {
         _dbContext = dbContext;
         Database = database;
         GameService = gameService;
+        SaveSyncService = saveSyncService;
         PendingMigrations = pendingMigrations;
     }
 
@@ -52,10 +56,31 @@ public sealed class AppServices : IDisposable
                 gameRepository,
                 saveRepository);
 
+        var fileDetector =
+    new SaveFileDetector();
+
+        var changeDetector =
+            new SaveChangeDetector();
+
+        var versionManager =
+            new SaveVersionManager();
+
+        var backupService =
+            new SaveBackupService();
+
+        var saveSyncService =
+            new SaveSyncService(
+                fileDetector,
+                changeDetector,
+                versionManager,
+                backupService,
+                saveRepository);
+
         return new AppServices(
             dbContext,
             database,
             gameService,
+            saveSyncService,
             pendingMigrations);
     }
 

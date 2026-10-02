@@ -142,7 +142,7 @@ public partial class MainWindow : Window
             SelectedGamePathTextBlock.Text =
                 $"Carpeta del guardado: {selectedGame.SaveFolderPath}";
 
-            LoadTrackedSaves(selectedGame);
+            await LoadTrackedSavesAsync(selectedGame);
 
             LibraryView.Visibility =
                 Visibility.Collapsed;
@@ -160,12 +160,18 @@ public partial class MainWindow : Window
         }
     }
 
-    private void LoadTrackedSaves(Game game)
+    private async Task LoadTrackedSavesAsync(Game game)
     {
         TrackedSavesPanel.Children.Clear();
 
         foreach (var save in game.TrackedSaves)
         {
+            var versions =
+                await ((App)Application.Current)
+                    .Services
+                    .GameService
+                    .GetVersionsAsync(save.Id);
+
             var panel = new StackPanel
             {
                 Margin = new Thickness(4, 6, 4, 6)
@@ -199,9 +205,17 @@ public partial class MainWindow : Window
                 Margin = new Thickness(0, 4, 0, 0)
             };
 
+            var versionCount = new TextBlock
+            {
+                Text = $"Versiones: {versions.Count}",
+                FontSize = 12,
+                Margin = new Thickness(0, 4, 0, 0)
+            };
+
             panel.Children.Add(name);
             panel.Children.Add(path);
             panel.Children.Add(status);
+            panel.Children.Add(versionCount);
 
             TrackedSavesPanel.Children.Add(panel);
         }
