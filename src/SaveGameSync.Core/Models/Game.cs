@@ -8,7 +8,7 @@ public sealed class Game
 
     public required string Origin { get; init; }
 
-    public string? TestMigration { get; set; }
+    public required string SaveFolderPath { get; init; }
 
     public List<TrackedSave> TrackedSaves { get; init; } = [];
 

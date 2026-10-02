@@ -30,7 +30,8 @@ public sealed class SqliteSaveRepositoryTests
             var game = new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\Games\DarkSoulsIII\Saves",
             };
 
             db.Games.Add(game);
@@ -93,7 +94,8 @@ public sealed class SqliteSaveRepositoryTests
             var game = new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\Games\DarkSoulsIII\Saves"
             };
 
             db.Games.Add(game);
@@ -157,7 +159,8 @@ public sealed class SqliteSaveRepositoryTests
             var game = new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\Games\DarkSoulsIII\Saves"
             };
 
             db.Games.Add(game);
@@ -244,7 +247,8 @@ public sealed class SqliteSaveRepositoryTests
             var game = new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\Games\DarkSoulsIII\Saves"
             };
 
             db.Games.Add(game);

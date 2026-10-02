@@ -29,7 +29,11 @@ public partial class AddGameWindow : Window
             Owner = this
         };
 
-        window.ShowDialog();
+        if (window.ShowDialog() == true &&
+            window.GameAdded)
+        {
+            DialogResult = true;
+        }
     }
 
     private void CancelButton_Click(

@@ -1,4 +1,5 @@
-﻿using SaveGameSync.Core.Models;
+﻿using System.IO;
+using SaveGameSync.Core.Models;
 using SaveGameSync.Core.Persistence;
 
 namespace SaveGameSync.Core.Services;
@@ -19,6 +20,7 @@ public sealed class GameService
     public async Task<Game> CreateGameAsync(
     string name,
     string origin,
+    string saveFolderPath,
     CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -35,10 +37,16 @@ public sealed class GameService
                 nameof(origin));
         }
 
+        if (string.IsNullOrWhiteSpace(saveFolderPath))
+            throw new ArgumentException(
+                "Save folder path cannot be empty.",
+                nameof(saveFolderPath));
+
         var game = new Game
         {
             Name = name.Trim(),
-            Origin = origin.Trim()
+            Origin = origin.Trim(),
+            SaveFolderPath = saveFolderPath.Trim()
         };
 
         await _repository.AddGameAsync(
@@ -46,6 +54,45 @@ public sealed class GameService
             cancellationToken);
 
         return game;
+    }
+
+    public async Task<TrackedSave> AddTrackedSaveAsync(
+    Guid gameId,
+    string name,
+    string filePath,
+    CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException(
+                "Save name cannot be empty.",
+                nameof(name));
+
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException(
+                "Save path cannot be empty.",
+                nameof(filePath));
+
+        var game = await _repository.GetGameAsync(
+            gameId,
+            cancellationToken);
+
+        if (game is null)
+            throw new InvalidOperationException(
+                $"Game '{gameId}' was not found.");
+
+        var trackedSave = new TrackedSave
+        {
+            GameId = gameId,
+            Name = name.Trim(),
+            FilePath = filePath.Trim(),
+            Exists = File.Exists(filePath)
+        };
+
+        await _saveRepository.AddTrackedSaveAsync(
+            trackedSave,
+            cancellationToken);
+
+        return trackedSave;
     }
 
     public async Task<IReadOnlyList<Game>> GetAllGamesAsync(
@@ -91,7 +138,8 @@ public sealed class GameService
         {
             Id = game.Id,
             Name = name.Trim(),
-            Origin = game.Origin
+            Origin = game.Origin,
+            SaveFolderPath = game.SaveFolderPath
         };
 
         await _repository.UpdateGameAsync(

@@ -41,7 +41,8 @@ public sealed class SaveSyncPersistenceTests
             var game = new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
             };
 
             db.Games.Add(game);
@@ -148,7 +149,8 @@ public sealed class SaveSyncPersistenceTests
             var game = new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
             };
 
             db.Games.Add(game);
@@ -270,7 +272,8 @@ public sealed class SaveSyncPersistenceTests
             var game = new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
             };
 
             db.Games.Add(game);

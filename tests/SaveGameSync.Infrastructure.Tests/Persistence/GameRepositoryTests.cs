@@ -32,6 +32,7 @@ public sealed class GameRepositoryTests
             {
                 Name = "Dark Souls III",
                 Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
             };
 
             await repository.AddGameAsync(game);
@@ -87,19 +88,22 @@ public sealed class GameRepositoryTests
             await repository.AddGameAsync(new Game
             {
                 Name = "The Witcher 3",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\TheWitcher3"
             });
 
             await repository.AddGameAsync(new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
             });
 
             await repository.AddGameAsync(new Game
             {
                 Name = "Elden Ring",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\EldenRing"
             });
 
             var games =
@@ -157,7 +161,8 @@ public sealed class GameRepositoryTests
             var game = new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
             };
 
             await repository.AddGameAsync(game);
@@ -166,7 +171,8 @@ public sealed class GameRepositoryTests
             {
                 Id = game.Id,
                 Name = "Dark Souls III - Updated",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
             };
 
             await repository.UpdateGameAsync(updatedGame);
@@ -230,7 +236,8 @@ public sealed class GameRepositoryTests
             var game = new Game
             {
                 Name = "Dark Souls III",
-                Origin = "Steam"
+                Origin = "Steam",
+                SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
             };
 
             await repository.AddGameAsync(game);

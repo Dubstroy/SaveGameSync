@@ -1,6 +1,6 @@
 ﻿using SaveGameSync.Core.Services;
 
-namespace SaveGameSync.Core.Tests;
+namespace SaveGameSync.Core.Tests.Services;
 
 public class SaveBackupServiceTests
 {

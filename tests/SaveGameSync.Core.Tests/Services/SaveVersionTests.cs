@@ -1,6 +1,6 @@
 ﻿using SaveGameSync.Core.Models;
 
-namespace SaveGameSync.Core.Tests;
+namespace SaveGameSync.Core.Tests.Services;
 
 public class SaveVersionTests
 {

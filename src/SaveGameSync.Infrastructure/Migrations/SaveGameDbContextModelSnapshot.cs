@@ -31,7 +31,8 @@ namespace SaveGameSync.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("TestMigration")
+                    b.Property<string>("SaveFolderPath")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

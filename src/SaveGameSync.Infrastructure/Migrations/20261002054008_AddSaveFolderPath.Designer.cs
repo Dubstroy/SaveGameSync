@@ -11,8 +11,8 @@ using SaveGameSync.Infrastructure.Persistence;
 namespace SaveGameSync.Infrastructure.Migrations
 {
     [DbContext(typeof(SaveGameDbContext))]
-    [Migration("20261002033123_AddTestMigration")]
-    partial class AddTestMigration
+    [Migration("20261002054008_AddSaveFolderPath")]
+    partial class AddSaveFolderPath
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,8 @@ namespace SaveGameSync.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("TestMigration")
+                    b.Property<string>("SaveFolderPath")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

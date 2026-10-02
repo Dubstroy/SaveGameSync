@@ -5,23 +5,24 @@
 namespace SaveGameSync.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddTestMigration : Migration
+    public partial class AddSaveFolderPath : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "TestMigration",
+                name: "SaveFolderPath",
                 table: "Games",
                 type: "TEXT",
-                nullable: true);
+                nullable: false,
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "TestMigration",
+                name: "SaveFolderPath",
                 table: "Games");
         }
     }

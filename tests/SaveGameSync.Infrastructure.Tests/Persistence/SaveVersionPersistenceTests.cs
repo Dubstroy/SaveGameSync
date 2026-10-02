@@ -34,7 +34,8 @@ public sealed class SaveVersionPersistenceTests
                 var game = new Game
                 {
                     Name = "Dark Souls III",
-                    Origin = "Steam"
+                    Origin = "Steam",
+                    SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
                 };
 
                 db.Games.Add(game);

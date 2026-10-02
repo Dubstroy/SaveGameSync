@@ -18,7 +18,9 @@ public sealed class GameServiceTests
 
         var game = await service.CreateGameAsync(
             "Dark Souls III",
-            "Steam");
+            "Steam",
+            @"C:\TestSaves\DarkSoulsIII");
+
 
         Assert.NotEqual(
             Guid.Empty,
@@ -50,7 +52,8 @@ public sealed class GameServiceTests
 
         var game = await service.CreateGameAsync(
             "  Dark Souls III  ",
-            "Steam");
+            "Steam",
+            @"C:\TestSaves\DarkSoulsIII");
 
         Assert.Equal(
             "Dark Souls III",
@@ -68,7 +71,7 @@ public sealed class GameServiceTests
             saveRepository);
 
         await Assert.ThrowsAsync<ArgumentException>(
-            () => service.CreateGameAsync("   ", "Steam"));
+            () => service.CreateGameAsync("   ", "Steam", @"C:\TestSaves\DarkSoulsIII"));
     }
 
     [Fact]
@@ -79,13 +82,15 @@ public sealed class GameServiceTests
         var firstGame = new Game
         {
             Name = "Dark Souls III",
-            Origin = "Steam"
+            Origin = "Steam",
+            SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
         };
 
         var secondGame = new Game
         {
             Name = "Dark Souls Remastered",
-            Origin = "Steam"
+            Origin = "Steam",
+            SaveFolderPath = @"C:\TestSaves\DarkSoulsRemastered"
         };
 
         await repository.AddGameAsync(firstGame);
@@ -120,7 +125,8 @@ public sealed class GameServiceTests
         var game = new Game
         {
             Name = "Dark Souls III",
-            Origin = "Steam"
+            Origin = "Steam",
+            SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
         };
 
         await repository.AddGameAsync(game);
@@ -169,7 +175,8 @@ public sealed class GameServiceTests
         var game = new Game
         {
             Name = "Dark Souls",
-            Origin = "Steam"
+            Origin = "Steam",
+            SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
         };
 
         await repository.AddGameAsync(game);
@@ -202,7 +209,8 @@ public sealed class GameServiceTests
         var game = new Game
         {
             Name = "Dark Souls III",
-            Origin = "Steam"
+            Origin = "Steam",
+            SaveFolderPath = @"C:\TestSaves\DarkSoulsIII"
         };
 
         await repository.AddGameAsync(game);
@@ -248,7 +256,8 @@ public sealed class GameServiceTests
 
         var game = await service.CreateGameAsync(
             "Dark Souls III",
-            "Steam");
+            "Steam",
+            @"C:\TestSaves\DarkSoulsIII");
 
         var savedGame = await repository.GetGameAsync(game.Id);
 
